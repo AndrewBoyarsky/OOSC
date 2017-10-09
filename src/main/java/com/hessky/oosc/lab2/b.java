@@ -1,0 +1,1 @@
+package com.hessky.oosc.lab2; public enum b {member;String s = "{{} )sgra ][gnirtS( niam diov citats cilbup};))(esrever.)s(redliuBgnirtS wen,43,s(ftnirp.tuo.metsyS{;%c%s%1$c=s gnirtS;rebmem{b mune cilbup ;csoo.ykysseh.moc egakcap";{System.out.printf(s, 34, new StringBuilder(s).reverse());}public static void main(String[] args) {}}
