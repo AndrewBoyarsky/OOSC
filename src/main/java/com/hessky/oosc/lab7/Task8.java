@@ -34,8 +34,11 @@ public class Task8 extends Task7 implements CalculatorTask {
         int openCounter = 1;
         int closeCounter = 0;
         int openPosition = expression.indexOf("(");
+        if (openPosition == -1) {
+            return null;
+        }
         int closePosition = 0;
-        for (int i = 0; i < chars.length; i++) {
+        for (int i = openPosition + 1; i < chars.length; i++) {
             if (closeCounter == openCounter) {
                 break;
             }
@@ -46,6 +49,9 @@ public class Task8 extends Task7 implements CalculatorTask {
                 closePosition = i;
             }
         }
+        if (closePosition == 0) {
+            return null;
+        }
         return new Coordinates(openPosition, closePosition);
     }
 
@@ -55,18 +61,15 @@ public class Task8 extends Task7 implements CalculatorTask {
         if (isPolynomial) {
             expression = expression.replaceAll(" ", "");
             Coordinates c;
-            while ((c = findFirstPriorityBraces(expression, 0)) != null) {
+            while ((c = findInnerBraces(expression)) != null) {
                 String bs = expression.substring(0, c.x1);
                 String as = expression.substring(c.x2 + 1);
                 int startIndex = Math.max(
                         bs.contains("+") ? bs.lastIndexOf("+") : Integer.MIN_VALUE,
-                        Math.max(bs.contains("-") ? bs.lastIndexOf("-") : Integer.MIN_VALUE,
-                                bs.contains("(") ? bs.lastIndexOf("(") : Integer.MIN_VALUE));
+                        bs.contains("-") ? bs.lastIndexOf("-") : Integer.MIN_VALUE);
                 if (startIndex == Integer.MIN_VALUE) { startIndex = c.x1;} else startIndex++;
                 int endIndex = Math.min(as.contains("+") ? as.indexOf("+") : Integer.MAX_VALUE,
-                        Math.min(as.contains("-") ? as.indexOf("-") : Integer.MAX_VALUE,
-                                as.contains(")") ? as.indexOf(")") : Integer.MAX_VALUE));
-
+                        as.contains("-") ? as.indexOf("-") : Integer.MAX_VALUE);
                 if (endIndex == Integer.MAX_VALUE) { endIndex = c.x2;} else { endIndex += c.x2;}
                 int counter = c.x2 + 1;
                 while (true) {
@@ -94,6 +97,17 @@ public class Task8 extends Task7 implements CalculatorTask {
         }
         return super.evaluate(expression);
     }
+
+//    private Coordinates findExpression(String expression) {
+//        char[] chars = expression.toCharArray();
+//        Coordinates c;
+//        if ((c=findInnerBraces(expression)) != null) {
+//            while (true) {
+//                if (c.x1-1 >= 0 && expression.charAt(c.x1-1) !='+'  )
+//            }
+//        }
+//        return null;
+//    }
 
 
     public Polynomial calculate(String expression, Map<String, Polynomial> polynomialMap) {
@@ -188,11 +202,16 @@ public class Task8 extends Task7 implements CalculatorTask {
     @Override
     public String parse(String expression) {
         if (isPolynomial) {
-
             Coordinates c;
             Map<String, Polynomial> inBracesPolynomials = new HashMap<>();
             int pCounter = 0;
-            while ((c = findFirstPriorityBraces(expression, 0)) != null) {
+            while ((c = findInnerBraces(expression)) != null) {
+                int ic = 0;
+                while (expression.substring(c.x1 + 1, c.x2).contains("(")) {
+                    ic += c.x1 + 1;
+                    c = findInnerBraces(expression.substring(c.x1 + 1, c.x2));
+                    c = new Coordinates(c.x1 + ic, c.x2 + ic);
+                }
                 String polynomialExpression = expression.substring(c.x1 + 1, c.x2);
                 inBracesPolynomials.put("P" + pCounter, calculate(polynomialExpression, inBracesPolynomials));
                 expression = expression.substring(0, c.x1) + "P" + pCounter++ + expression.substring(c.x2 + 1);
@@ -202,5 +221,43 @@ public class Task8 extends Task7 implements CalculatorTask {
             return res.toString();
 
         } else return super.parse(expression);
+    }
+
+    public Coordinates findExpression(String expr) {
+        char[] chars = expr.toCharArray();
+
+        Coordinates c = findInnerBraces(expr);
+        int x1 = -1;
+        int x2 = -1;
+        if (c != null) {
+            x1 = c.x1;
+            x2 = c.x2;
+            for (int i = c.x1 - 1; i >= 0; i--) {
+                if (chars[i] == '+' || chars[i] == '-') {
+                    x1 = i;
+                }
+            }
+            int openCounter = 0;
+            for (int i = c.x2 + 1; i < chars.length; i++) {
+                if (chars[i] == '(') {
+                    openCounter++;
+                } else if (chars[i] == ')') {
+                    openCounter--;
+                }
+                if (openCounter > 0) {
+                    continue;
+                }
+                if (chars[i] == '+' || chars[i] == '-') {
+                    x2 = i;
+                }
+                if (x2 == c.x2 && i == chars.length - 1) {
+                    x2 = i;
+                }
+            }
+        }
+        if (x1 == -1 || x2 == -1 || x2 == 0) {
+            return null;
+        }
+        return new Coordinates(x1, x2);
     }
 }

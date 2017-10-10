@@ -9,6 +9,24 @@ public class Coordinates {
         this.x2 = x2;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Coordinates)) return false;
+
+        Coordinates that = (Coordinates) o;
+
+        if (getX1() != that.getX1()) return false;
+        return getX2() == that.getX2();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getX1();
+        result = 31 * result + getX2();
+        return result;
+    }
+
     public Coordinates() {
     }
 
