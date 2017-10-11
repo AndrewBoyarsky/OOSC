@@ -1,5 +1,7 @@
 package com.hessky.oosc.lab7;
 
+import java.util.Objects;
+
 public class Task6 extends Task5 implements CalculatorTask {
     private boolean isBool;
 
@@ -9,6 +11,8 @@ public class Task6 extends Task5 implements CalculatorTask {
 
     @Override
     public String evaluate(String expression) {
+        Objects.requireNonNull(expression, "String must be not null");
+        if (expression.isEmpty()) return "";
         checkBool(expression);
         return super.evaluate(expression);
     }

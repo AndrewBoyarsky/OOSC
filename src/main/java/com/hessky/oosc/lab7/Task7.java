@@ -1,5 +1,7 @@
 package com.hessky.oosc.lab7;
 
+import java.util.Objects;
+
 public class Task7 extends Task6 implements CalculatorTask {
     private boolean isMatrix;
 
@@ -9,6 +11,8 @@ public class Task7 extends Task6 implements CalculatorTask {
 
     @Override
     public String evaluate(String expression) {
+        Objects.requireNonNull(expression, "String must be not null");
+        if (expression.isEmpty()) return "";
         checkIsMatrix(expression);
         return super.evaluate(expression);
     }

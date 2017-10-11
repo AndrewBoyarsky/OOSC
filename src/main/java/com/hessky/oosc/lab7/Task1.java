@@ -44,30 +44,39 @@ public class Task1 implements CalculatorTask {
 
     }
 
+    @Override
     public String evaluate(String expression) {
+        Objects.requireNonNull(expression, "String must be not null");
+        if (expression.isEmpty()) return "";
         String temp = expression;
-        if (!temp.contains("[") && !temp.contains("]")) {
-            temp = temp.replaceAll(" ", "");
-        } else {
-            int i = 0;
-            while (i < temp.length() && temp.substring(i).contains("[")) {
-                int openMatrixBrace = temp.substring(i).indexOf("[") + i;
-                int closeMatrixBrace = temp.substring(i).indexOf("]") + i;
-                temp = temp.substring(0, i) + temp.substring(i, openMatrixBrace).replaceAll(" ", "") + temp.substring
-                        (openMatrixBrace).trim();
-                i = closeMatrixBrace + 1;
-            }
-        }
-        Coordinates c;
-        while ((c = findFirstPriorityBraces(temp, 0)) != null) {
+        try {
 
-            temp = temp.substring(0, c.getX1()) + parse(temp.substring(c.getX1() + 1, c.getX2())) + temp.substring(c.getX2() + 1);
-            temp = collapseSigns(temp);
+            if (!temp.contains("[") && !temp.contains("]")) {
+                temp = temp.replaceAll(" ", "");
+            } else {
+                int i = 0;
+                while (i < temp.length() && temp.substring(i).contains("[")) {
+                    int openMatrixBrace = temp.substring(i).indexOf("[") + i;
+                    int closeMatrixBrace = temp.substring(i).indexOf("]") + i;
+                    temp = temp.substring(0, i) + temp.substring(i, openMatrixBrace).replaceAll(" ", "") + temp.substring
+                            (openMatrixBrace).trim();
+                    i = closeMatrixBrace + 1;
+                }
+            }
+            Coordinates c;
+            while ((c = findFirstPriorityBraces(temp, 0)) != null) {
+
+                temp = temp.substring(0, c.getX1()) + parse(temp.substring(c.getX1() + 1, c.getX2())) + temp.substring(c.getX2() + 1);
+                temp = collapseSigns(temp);
+            }
+            return parse(temp);
         }
-        return parse(temp);
+        catch (Throwable e) {
+            throw new IllegalArgumentException("Expression contains errors! " + expression, e);
+        }
     }
 
-    public String collapseSigns(String temp) {
+    protected String collapseSigns(String temp) {
         String[] signs = temp.split("[0-9().]");
         for (String sign : signs) {
             if (sign.length() > 1) {
@@ -93,7 +102,7 @@ public class Task1 implements CalculatorTask {
         }
         return temp;
     }
-
+    @Override
     public String parse(String expression) {
         for (int i = 0; i < expression.length(); i++) {
 

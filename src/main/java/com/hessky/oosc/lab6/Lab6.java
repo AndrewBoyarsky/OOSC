@@ -40,7 +40,11 @@ public class Lab6 {
             if (current == null) {
                 return;
             }
-
+/**
+ *                  3
+ *              4        5
+ *            2    3
+ */
             while (current != null) {
                 if (current.left != null) {
                     Node temp = current.left;
@@ -51,11 +55,9 @@ public class Lab6 {
                     }
 
                     if (temp.right == null) {
-                        //create the link to predecessor
                         temp.right = current;
                         current = current.left;
                     } else {
-                        //remove the link
                         temp.right = null;
                         System.out.println(current.value);
                         current = current.right;

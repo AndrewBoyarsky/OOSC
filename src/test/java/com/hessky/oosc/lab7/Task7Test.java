@@ -2,13 +2,14 @@ package com.hessky.oosc.lab7;
 
 import org.junit.Assert;
 
-public class Task7Test extends CalculatorTest {
+public class Task7Test extends Task6Test implements CalculatorTest {
     public Task7Test() {
-        super(new Task7());
+        calculatorTask = new Task7();
     }
 
     @Override
     public void evaluate() throws Exception {
+        super.evaluate();
         Assert.assertEquals("[2.0 0.0 ; 0.0 0.0 ; ]", calculatorTask.evaluate("-[2 3;43 -12] + [4 3;43 -12]"));
         Assert.assertEquals("[10.5 -30.0 ; 187.5 273.0 ; ]", calculatorTask.evaluate("-[2 3;43 -12] * -[4.5 3;0.5 -12]"));
         Assert.assertEquals("[-6.5 -6.0 ; -43.5 24.0 ; ]", calculatorTask.evaluate("-[2 3;43 -12] -  [4.5 3;0.5 -12]"));
@@ -19,18 +20,4 @@ public class Task7Test extends CalculatorTest {
 
     }
 
-    @Override
-    public void parse() throws Exception {
-
-    }
-
-    @Override
-    public void collapseSigns() throws Exception {
-
-    }
-
-    @Override
-    public void findFirstPriorityBraces() throws Exception {
-
-    }
 }

@@ -1,11 +1,10 @@
 package com.hessky.oosc.lab7;
 
 
-// x^3+3x^4*(x^2+3)*(x^2-4)
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 8. Додати можливість точного обчислення значень виразів над многочленами однієї змінної х
@@ -29,7 +28,7 @@ public class Task8 extends Task7 implements CalculatorTask {
         isPolynomial = expression.contains("x^");
     }
 
-    public Coordinates findInnerBraces(String expression) {
+    private Coordinates findInnerBraces(String expression) {
         char[] chars = expression.toCharArray();
         int openCounter = 1;
         int closeCounter = 0;
@@ -57,66 +56,33 @@ public class Task8 extends Task7 implements CalculatorTask {
 
     @Override
     public String evaluate(String expression) {
-        checkIsPolynomial(expression);
-        if (isPolynomial) {
-            expression = expression.replaceAll(" ", "");
-            Coordinates c;
-            while ((c = findInnerBraces(expression)) != null) {
-                String bs = expression.substring(0, c.x1);
-                String as = expression.substring(c.x2 + 1);
-                int startIndex = Math.max(
-                        bs.contains("+") ? bs.lastIndexOf("+") : Integer.MIN_VALUE,
-                        bs.contains("-") ? bs.lastIndexOf("-") : Integer.MIN_VALUE);
-                if (startIndex == Integer.MIN_VALUE) { startIndex = c.x1;} else startIndex++;
-                int endIndex = Math.min(as.contains("+") ? as.indexOf("+") : Integer.MAX_VALUE,
-                        as.contains("-") ? as.indexOf("-") : Integer.MAX_VALUE);
-                if (endIndex == Integer.MAX_VALUE) { endIndex = c.x2;} else { endIndex += c.x2;}
-                int counter = c.x2 + 1;
-                while (true) {
-                    int openBrace = (expression.substring(counter).contains("(") ? expression.substring(counter).indexOf("(") : Integer.MAX_VALUE) +
-                            counter;
-                    int closeBrace = (expression.substring(counter).contains(")") ? expression.substring(counter).indexOf(")") : Integer.MIN_VALUE
-                    ) + counter;
-                    counter = closeBrace + 1;
-                    if (endIndex > openBrace && endIndex < closeBrace) {
-                        endIndex = Math.min(expression.substring(counter).contains("+") ? expression.substring(counter).indexOf("+") : Integer.MAX_VALUE,
-                                Math.min(expression.substring(counter).contains("-") ? expression.substring(counter).indexOf("-") : Integer.MAX_VALUE,
-                                        expression.substring(counter).contains(")") ? expression.substring(counter).indexOf(")") : Integer.MAX_VALUE));
-                        if (endIndex == Integer.MAX_VALUE) endIndex = counter;
-                        else endIndex += counter;
-                        if (endIndex + 1 == expression.length()) endIndex = expression.length() - 1;
-                    } else {
-                        break;
-                    }
+        Objects.requireNonNull(expression, "String must be not null");
+        if (expression.isEmpty()) return "";
+        try {
+
+            checkIsPolynomial(expression);
+            if (isPolynomial) {
+                expression = expression.replaceAll(" ", "");
+                Coordinates c;
+                while ((c = findExpression(expression)) != null) {
+                    expression = expression.substring(0, c.x1) + parse(expression.substring(c.x1, c.x2) + expression.substring(c.x2));
                 }
-                expression = expression.substring(0, startIndex) + parse(expression.substring(startIndex, endIndex >= expression.length() ? expression
-                        .length() : endIndex + 1)) + (endIndex >= expression.length() ? "" : expression.substring(endIndex + 1));
-                expression = collapseSigns(expression);
+                return parse(expression);
             }
-            return parse(expression);
+            return super.evaluate(expression);
         }
-        return super.evaluate(expression);
+        catch (Throwable e) {
+            throw new IllegalArgumentException("Expression contains errors! " + expression, e);
+        }
     }
 
-//    private Coordinates findExpression(String expression) {
-//        char[] chars = expression.toCharArray();
-//        Coordinates c;
-//        if ((c=findInnerBraces(expression)) != null) {
-//            while (true) {
-//                if (c.x1-1 >= 0 && expression.charAt(c.x1-1) !='+'  )
-//            }
-//        }
-//        return null;
-//    }
-
-
-    public Polynomial calculate(String expression, Map<String, Polynomial> polynomialMap) {
+    private Polynomial calculate(String expression, Map<String, Polynomial> polynomialMap) {
         Map<String, Polynomial> polynomials = new HashMap();
         int pCounter = 0;
         while (expression.contains("/") || expression.contains("*")) {
             int divisionIndex = expression.indexOf("/");
             int multiplyIndex = expression.indexOf("*");
-            int signIndex = 0;
+            int signIndex;
             if (divisionIndex == -1) {
                 signIndex = multiplyIndex;
             } else if (multiplyIndex == -1) {
@@ -149,7 +115,7 @@ public class Task8 extends Task7 implements CalculatorTask {
             String secondPol = expression.substring(signIndex + 1, farSignIndex);
             Polynomial second = initPolynomial(secondPol, polynomialMap, polynomials);
 
-            Polynomial result = null;
+            Polynomial result;
             if (signIndex == multiplyIndex) {
                 result = first.multiply(second);
             } else {
@@ -234,7 +200,7 @@ public class Task8 extends Task7 implements CalculatorTask {
             x2 = c.x2;
             for (int i = c.x1 - 1; i >= 0; i--) {
                 if (chars[i] == '+' || chars[i] == '-') {
-                    x1 = i;
+                    x1 = i + 1;
                 }
             }
             int openCounter = 0;

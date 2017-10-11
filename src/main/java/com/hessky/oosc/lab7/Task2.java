@@ -10,12 +10,6 @@ import java.util.Arrays;
  */
 public class Task2 extends Task1 implements CalculatorTask {
     @Override
-    public String evaluate(String expression) {
-        return super.evaluate(expression);
-    }
-
-
-    @Override
     public String parse(String expression) {
         for (int i = 0; i < expression.length(); i++) {
 
