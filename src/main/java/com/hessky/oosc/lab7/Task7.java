@@ -163,14 +163,14 @@ public class Task7 extends Task6 implements CalculatorTask {
         return result;
     }
 
-    private double[][] multiplyMatrix(int constant, double[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                matrix[i][j] = constant * matrix[i][j];
-            }
-        }
-        return matrix;
-    }
+//    private double[][] multiplyMatrix(int constant, double[][] matrix) {
+//        for (int i = 0; i < matrix.length; i++) {
+//            for (int j = 0; j < matrix[0].length; j++) {
+//                matrix[i][j] = constant * matrix[i][j];
+//            }
+//        }
+//        return matrix;
+//    }
 
     private double[][] addMatrices(double[][] first, double[][] second) {
         if (first.length != second.length || first[0].length != second[0].length) {
